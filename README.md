@@ -1,5 +1,6 @@
 # Learning Redux
 Notes from Dan Abramov's lesson on Redux: https://egghead.io/series/getting-started-with-redux
+
 Great to learn for users of React, and now Angular 2 and Ember.
 
 ## Pure vs Impure Functions
