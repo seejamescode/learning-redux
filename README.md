@@ -81,7 +81,7 @@ When using the external script for Redux with Webpack or Browserfy, we are given
 
 **Store** - Binds together the three principles of Redux. It holds the app’s state. It lets you dispatch actions. When you create it, you need to specify the reducer that tells how state is updated with actions.
 
-    // createStore(reducer) binds your reducer to the store
+    // createStore(reducer) binds your reducer to the new store
     import { createStore } from “Redux";
     const store = createStore(counter);
     
@@ -99,7 +99,7 @@ When using the external script for Redux with Webpack or Browserfy, we are given
       store.dispatch({ type: ‘INCREMENT’ });
     });
 
-### What would createStore look like if you made one from scratch?
+## What would createStore look like if you made one from scratch?
 
     // Reducer is only argument passed when declaring variable
     const createStore = (reducer) => {
@@ -132,3 +132,129 @@ When using the external script for Redux with Webpack or Browserfy, we are given
       return { getState, dispatch, subscribe };
     };
 
+## Redux + React Example
+
+1. We are going to keep the same **reducer** from earlier:
+
+    const counter = (state = 0, action) => {
+      switch (action.type) {
+        case ‘INCREMENT’:
+          return state + 1;
+        case ‘DECREMENT’:
+          return state - 1;
+        default:
+          return state;
+      }
+    }
+
+    const { createStore } = Redux;
+    const store = createStore(counter);
+
+2. To make the render function of the root called everytime the **store** updates, subscribe the root render function to the store:
+
+    const counter = (state = 0, action) => {
+      switch (action.type) {
+        case ‘INCREMENT’:
+          return state + 1;
+        case ‘DECREMENT’:
+          return state - 1;
+        default:
+          return state;
+      }
+    }
+
+    const { createStore } = Redux;
+    const store = createStore(counter);
+
+    const render = () => {
+      ReactDOM.render(
+        document.getElementById('root')
+      );
+    };
+
+    // Hey root component render function, be a callback for whenever our store changes!
+    store.subscribe(render);
+    render();
+
+3. Now we can safely pass the current **state** changes, we pass it to our counter as a prop:
+
+    const counter = (state = 0, action) => {
+      switch (action.type) {
+        case ‘INCREMENT’:
+          return state + 1;
+        case ‘DECREMENT’:
+          return state - 1;
+        default:
+          return state;
+      }
+    }
+
+    // Make that component
+    const Counter = ({ value }) => (
+      <h1>{value}</h1>
+    );
+
+    const { createStore } = Redux;
+    const store = createStore(counter);
+
+    const render = () => {
+      ReactDOM.render(
+        // Pass the current state as a prop to every component
+        <Counter value={store.getState()} />,
+        document.getElementById('root')
+      );
+    };
+
+    store.subscribe(render);
+    render();
+
+3. Now we can safely pass the current **state** changes, we pass it to our counter as a prop:
+
+    const counter = (state = 0, action) => {
+      switch (action.type) {
+        case ‘INCREMENT’:
+          return state + 1;
+        case ‘DECREMENT’:
+          return state - 1;
+        default:
+          return state;
+      }
+    }
+
+    // Bind buttons to dispatches back in the root as callbacks
+    const Counter = ({
+      value,
+      onIncrement,
+      onDecrement
+    }) => (
+      <h1>{value}</h1>
+      <button onClick={onIncrement}>+</button>
+      <button onClick={onDecrement}>-</button>
+    );
+
+    const { createStore } = Redux;
+    const store = createStore(counter);
+
+    const render = () => {
+      ReactDOM.render(
+        <Counter
+          value={store.getState()}
+
+          // Here are the actual dispatches that the button callbacks trigger to hit the store
+          onIncrement={() =>
+            store.dispatch({
+              type: 'INCREMENT'
+            })
+          }
+          onDe crement={() =>
+            store.dispatch({
+              type: 'DECREMENT'
+            })
+          }
+        />,
+        document.getElementById('root')
+      );
+    };
+
+    store.subscribe(render);
+    render();
