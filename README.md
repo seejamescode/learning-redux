@@ -258,3 +258,88 @@ When using the external script for Redux with Webpack or Browserfy, we are given
     
         store.subscribe(render);
         render();
+
+## Avoid Array Mutations
+
+A mutator method is a method used to control changes to a variable. If any Javascript mutator methods are used in a **reducer**, it will be impure. Here are a list of JS mutator methods to watch out for:
+
+* copyWithin
+* fill
+* pop
+* push
+* reverse
+* shift
+* sort
+* splice
+* unshift
+
+The biggest accessor methods that will help subsitute and keep **reducers** as **pure functions** are:
+
+* concat - Returns a new array comprised of this array joined with other array(s) and/or value(s).
+* slice - Extracts a section of an array and returns a new array.
+
+Here is how you would tackle a **reducer** with .push():
+
+    // Womp womp, this is impure!
+    const addCounter = (list) => {
+        list.push(0);
+        return list;
+    };
+    
+    // This works!
+    const addCounter = (list) => {
+        return list.concat([0]);
+    };
+    
+    // This works and is using ES6!
+    const addCounter = (list) => {
+        return [...list, 0]
+    }
+
+Here is how you would tackle a **reducer** with .splice():
+
+    // Womp womp, this is impure!
+    const removeCounter = (list, index) => {
+        list.splice(index, 1);
+        return list;
+    };
+    
+    // This works!
+    const removeCounter = (list, index) => {
+        return list
+            .slice(0, index)
+            .concat(list.slice(index + 1));
+    };
+    
+    // This works and is using ES6!
+    const removeCounter = (list, index) => {
+        return [
+            ...list.slice(0, index),
+            ...list.slice(index + 1)
+        ];
+    }
+
+Here is how you would tackle a **reducer** that replaces a single value:
+
+    // Womp womp, this is impure!
+    const incrementCounter = (list, index) => {
+        list[index]++;
+        return list;
+    };
+    
+    // This works!
+    const incrementCounter = (list, index) => {
+        return list
+            .slice(0, index)
+            .concat([list[index] + 1])
+            .concat(list.slice(index + 1));
+    };
+    
+    // This works and is using ES6!
+    const incrementCounter = (list, index) => {
+        return [
+            ...list.slice(0, index),
+            list[index] + 1,
+            ...list.slice(index + 1)
+        ];
+    }
