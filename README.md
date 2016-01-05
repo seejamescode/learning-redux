@@ -6,7 +6,7 @@ Great to learn for users of React, and now Angular 2 and Ember.
 ## Pure vs Impure Functions
 Some of the functions you write in Redux have to be pure and you have to be mindful of that.
 
-**Pure Functions** - Return values solely based on the arguments given to the function instead of having any observable side effects such as network and database calls. They also do not the value passed in them. It returns a new variable. Examples:
+**Pure Functions** - Return values solely based on the arguments given to the function instead of having any observable side effects such as network and database calls. They also do not the value passed from them. It returns a new variable. Examples:
 
     function square(x) {
         return x * x;
@@ -15,13 +15,23 @@ Some of the functions you write in Redux have to be pure and you have to be mind
     function squareAll(items) {
         return items.map(square);
     }
-**Impure Functions** - May call the database or network, have side effects, operate on the DOM, and override the values passed on to them.
+**Impure Functions** - May call the database or network, have side effects, operate on the DOM, and override the values passed on to them. Examples:
+
+    function square(x) {
+        x = x * x;
+        return x;
+    }
+
+    function squareAll(items) {
+        items = items.map(square);
+        return items;
+    }
 
 ## Three Principals of Redux
 
-1. Everything that changes in your app, including the data and the UI state, is contained in a single object that we call the state or state tree.
+1. Everything that changes in your app, including the data and the UI state, is contained in a single object that we call the **state** or **state tree**.
 
-    **State or State Tree** - the whole state of your application:
+    **State** or **State Tree** - the whole state of your application:
     
         [object Object] {
             todos: [
@@ -36,14 +46,14 @@ Some of the functions you write in Redux have to be pure and you have to be mind
                 }],
             visibilityFilter: “SHOW_COMPLETED”
         }
-2. The state tree is redundant, meaning you can not write or modify to the state tree. Anytime you want to change the state, you to dispatch an action.
+2. The state tree is redundant, meaning you can not write or modify to the state tree. Anytime you want to change the state, you have to dispatch an action.
 
     **Action** - a plain javascript object describing the minimal change to the app. Only requirement is that the action have a “type” property that is not undefined. Recommendation that “type” property is a string value:
     
         [object Object] {
             type: “INCREMENT”
         }
-3. To describe state mutations, you have to write a function called the “Reducer” that takes the previous state of the app, the action being dispatched, and returns the next state of the app.
+3. To describe state mutations, you have to write a function called the **Reducer** that takes the previous state of the app, the action being dispatched, and returns the next state of the app.
 
     **Reducer** - describes the state mutation as a pure function. Takes the previous state and the action being dispatched as arguments and returns the next state of your application. An example of the return:
 
@@ -88,3 +98,37 @@ When using the external script for Redux with Webpack or Browserfy, we are given
     document.addEventListener(‘click’, () => {
       store.dispatch({ type: ‘INCREMENT’ });
     });
+
+### What would createStore look like if you made one from scratch?
+
+    // Reducer is only argument passed when declaring variable
+    const createStore = (reducer) => {
+
+      // Current state
+      let state;
+
+      // To keep track of all the changed listeners aka history.
+      // This helps a bunch in the future with debugging.
+      let listeners = [];
+
+      // Just return current state
+      const getState = () => state;
+
+      const dispatch = (action) => {
+        state = reducer(state, action);
+        listeners.forEach(listener => listener());
+      };
+
+      const subscribe = (listener) => {
+        // Keep 
+        listeners.push(listener);
+        return () => {
+          listeners = listeners.filter(l => l !== listener);
+        };
+      };
+
+      dispatch({});
+
+      return { getState, dispatch, subscribe };
+    };
+
