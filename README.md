@@ -103,7 +103,7 @@ When using the external script for Redux with Webpack or Browserfy, we are given
       store.dispatch({ type: ‘INCREMENT’ });
     });
 
-## What would createStore look like if you made one from scratch?
+### What would createStore look like if you made one from scratch?
 
     // Reducer is only argument passed when declaring variable
     const createStore = (reducer) => {
@@ -136,7 +136,7 @@ When using the external script for Redux with Webpack or Browserfy, we are given
       return { getState, dispatch, subscribe };
     };
 
-## Redux + React Example
+## What We Know So Far: Redux + React Example
 
 1. We are going to keep the same **reducer** from earlier:
 
@@ -263,7 +263,9 @@ When using the external script for Redux with Webpack or Browserfy, we are given
         store.subscribe(render);
         render();
 
-## Avoid Array Mutations
+## Avoid Mutations
+
+### Avoid Array Mutations
 
 A mutator method is a method used to control changes to a variable. If any Javascript mutator methods are used in a **reducer**, it will be impure. Here are a list of JS mutator methods to watch out for:
 
@@ -347,3 +349,21 @@ Here is how you would tackle a **reducer** that replaces a single value:
             ...list.slice(index + 1)
         ];
     }
+
+### Avoid Object Mutations
+
+Remember that you cannot use an **impure function** for your **reducer** when returning objects also. So this function would be invalid:
+
+    const toggleTodo = (todo) => {
+        todo.completed = !todo.completed;
+        return todo;
+    };
+    
+Instead, you can return a new object with the added ES6 method "Object.assign()". Here is an example of the ES7 proposal version "...". It is available in Babel:
+
+    const toggleTodo = (todo) => {
+        return {
+            ...todo,
+            completed: !todo.completed
+        };
+    };
