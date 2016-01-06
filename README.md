@@ -3,6 +3,10 @@ Notes from Dan Abramov's lesson on Redux: https://egghead.io/series/getting-star
 
 Great to learn for users of React, and now Angular 2 and Ember.
 
+Redux is a predictable state container for JavaScript apps.  
+
+It helps you write applications that behave consistently, run in different environments (client, server, and native), and are easy to test. On top of that, it provides a great developer experience, such as [live code editing combined with a time traveling debugger](https://github.com/gaearon/redux-devtools).
+
 ## Pure vs Impure Functions
 Some of the functions you write in Redux have to be pure and you have to be mindful of that.
 
